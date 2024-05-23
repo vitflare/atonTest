@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtonTest.Api", "AtonTest.Api\AtonTest.Api.csproj", "{556C4D27-C602-42EB-B664-CE5FC4049C5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtonTest.Infrastructure", "AtonTest.Infrastructure\AtonTest.Infrastructure.csproj", "{99B8E4E5-6CC9-4033-8DA7-A116C8942A1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtonTest.Core", "AtonTest.Core\AtonTest.Core.csproj", "{FF810992-1FB0-4E71-BC82-ADBCA8587D08}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{49B0945B-CE23-4763-AB69-C30E241E459A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{556C4D27-C602-42EB-B664-CE5FC4049C5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{556C4D27-C602-42EB-B664-CE5FC4049C5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{556C4D27-C602-42EB-B664-CE5FC4049C5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{556C4D27-C602-42EB-B664-CE5FC4049C5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99B8E4E5-6CC9-4033-8DA7-A116C8942A1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99B8E4E5-6CC9-4033-8DA7-A116C8942A1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99B8E4E5-6CC9-4033-8DA7-A116C8942A1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99B8E4E5-6CC9-4033-8DA7-A116C8942A1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF810992-1FB0-4E71-BC82-ADBCA8587D08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF810992-1FB0-4E71-BC82-ADBCA8587D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF810992-1FB0-4E71-BC82-ADBCA8587D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF810992-1FB0-4E71-BC82-ADBCA8587D08}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{556C4D27-C602-42EB-B664-CE5FC4049C5A} = {49B0945B-CE23-4763-AB69-C30E241E459A}
+		{FF810992-1FB0-4E71-BC82-ADBCA8587D08} = {49B0945B-CE23-4763-AB69-C30E241E459A}
+		{99B8E4E5-6CC9-4033-8DA7-A116C8942A1B} = {49B0945B-CE23-4763-AB69-C30E241E459A}
+	EndGlobalSection
+EndGlobal

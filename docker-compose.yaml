@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  aton-db:
+    image: postgres:14.4-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: aton-service
+      POSTGRES_USER: aton-service
+      POSTGRES_PASSWORD: aton-service
+      
+  goose:
+    image: ghcr.io/kukymbr/goose-docker:latest
+    depends_on:
+      - aton-db
+    volumes:
+      - ./migrations:/migrations
+    environment:
+      GOOSE_DRIVER: postgres
+      GOOSE_DBSTRING: "host=aton-db user=aton-service password=aton-service dbname=aton-service sslmode=disable"

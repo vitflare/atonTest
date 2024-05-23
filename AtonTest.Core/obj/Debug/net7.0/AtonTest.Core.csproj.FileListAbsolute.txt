@@ -1,0 +1,12 @@
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/bin/Debug/net7.0/AtonTest.Core.deps.json
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/bin/Debug/net7.0/AtonTest.Core.dll
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/bin/Debug/net7.0/AtonTest.Core.pdb
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/AtonTest.Core.csproj.AssemblyReference.cache
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/AtonTest.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/AtonTest.Core.AssemblyInfoInputs.cache
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/AtonTest.Core.AssemblyInfo.cs
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/AtonTest.Core.csproj.CoreCompileInputs.cache
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/AtonTest.Core.dll
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/refint/AtonTest.Core.dll
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/AtonTest.Core.pdb
+/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Core/obj/Debug/net7.0/ref/AtonTest.Core.dll

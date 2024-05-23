@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "gsIRdC3PCDrKg6O0+Qo91Z0cHAVl+uB+fYUCnIgimGhWqhOIGN2bsPQNy9L5kRBdB6h/uNPg1MLf6yLyg3x7uA==",
+  "success": true,
+  "projectFilePath": "/Users/elizabeth/RiderProjects/AtonTest/AtonTest.Infrastructure/AtonTest.Infrastructure.csproj",
+  "expectedPackageFiles": [
+    "/Users/elizabeth/.nuget/packages/dapper/2.1.35/dapper.2.1.35.nupkg.sha512",
+    "/Users/elizabeth/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "/Users/elizabeth/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.0/microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "/Users/elizabeth/.nuget/packages/microsoft.extensions.options/8.0.2/microsoft.extensions.options.8.0.2.nupkg.sha512",
+    "/Users/elizabeth/.nuget/packages/microsoft.extensions.primitives/8.0.0/microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "/Users/elizabeth/.nuget/packages/npgsql/8.0.3/npgsql.8.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
