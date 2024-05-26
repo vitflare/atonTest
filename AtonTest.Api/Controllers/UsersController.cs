@@ -1,5 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using AtonTest.Core.DTOs;
 using AtonTest.Core.Interfaces;
 using AtonTest.Requests;
@@ -7,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using AtonTest.Core.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace AtonTest.Controllers;
 
@@ -15,12 +12,10 @@ namespace AtonTest.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly TokenValidationParameters _validationParameters;
     private readonly IUserManagementService _userManagementService;
     
     public UsersController(IOptionsSnapshot<AtonTestServiceOptions> optionsSnapshot, IUserManagementService userManagementService)
     {
-        _validationParameters = optionsSnapshot.GetTokenValidationParameters();
         _userManagementService = userManagementService;
     }
     
@@ -29,9 +24,6 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateUser(CreateUserRequest request)
     {
-        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        var claims = new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out _).Claims;
-        
         CreateUserDto dto = new CreateUserDto
         {
             Login = request.Login,
@@ -40,7 +32,7 @@ public class UsersController : ControllerBase
             Gender = request.Gender,
             Birthday = request.Birthday,
             Admin = request.Admin,
-            CreatedBy = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value
+            CreatedBy = HttpContext.Items["UserLogin"].ToString()
         };
         try
         {
@@ -50,7 +42,7 @@ public class UsersController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-
+        
         return Ok("User created successfully!");
     }
 
@@ -59,10 +51,8 @@ public class UsersController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UpdateUserInfo(UpdateUserInfoRequest request)
     {
-        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        var claims = new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out _).Claims;
-        var login = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-        var role = claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+        var login = HttpContext.Items["UserLogin"].ToString();
+        var role = HttpContext.Items["UserRole"].ToString();
         if (!role.Equals("Admin") && login != request.Login)
         {
             return Unauthorized("You don't have permission to update this user");
@@ -95,10 +85,8 @@ public class UsersController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UpdateUserLogin(string oldLogin, string newLogin)
     {
-        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        var claims = new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out _).Claims;
-        var login = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-        var role = claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+        var login = HttpContext.Items["UserLogin"].ToString();
+        var role = HttpContext.Items["UserRole"].ToString();
         if (!role.Equals("Admin") && login != oldLogin)
         {
             return Unauthorized("You don't have permission to update this user");
@@ -128,10 +116,8 @@ public class UsersController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UpdateUserPassword(UpdateUserPasswordRequest request)
     {
-        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        var claims = new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out _).Claims;
-        var login = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-        var role = claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
+        var login = HttpContext.Items["UserLogin"].ToString();
+        var role = HttpContext.Items["UserRole"].ToString();
         if (!role.Equals("Admin") && login != request.Login)
         {
             return Unauthorized("You don't have permission to update this user");
@@ -167,10 +153,8 @@ public class UsersController : ControllerBase
             return BadRequest("Invalid deletion mode");
         }
         
-        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        var claims = new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out _).Claims;
-        
-        if (claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value == request.Login)
+        var login = HttpContext.Items["UserLogin"].ToString();
+        if (login == request.Login)
         {
             return BadRequest("You can't delete your own account");
         }
@@ -179,7 +163,7 @@ public class UsersController : ControllerBase
             Login = request.Login,
             Password = request.Password,
             DeletionMode = request.DeletionMode,
-            RevokedBy = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value
+            RevokedBy = login
         };
         
         try

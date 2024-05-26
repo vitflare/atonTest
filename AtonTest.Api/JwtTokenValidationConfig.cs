@@ -1,16 +1,11 @@
-using AtonTest.Core.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace AtonTest;
 
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 public static class JwtTokenValidationConfig
 {
-    public static TokenValidationParameters GetTokenValidationParameters(this IOptionsSnapshot<AtonTestServiceOptions> optionsSnapshot)
+    public static TokenValidationParameters GetTokenValidationParameters(string key)
     {
         return new TokenValidationParameters
         {
@@ -23,7 +18,7 @@ public static class JwtTokenValidationConfig
                 TokenValidationParameters parameters) => new List<SecurityKey>()
             {
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(optionsSnapshot.Value.JwtKey!))
+                    Encoding.UTF8.GetBytes(key))
             },
             ValidateIssuerSigningKey = true,
             ClockSkew = TimeSpan.Zero

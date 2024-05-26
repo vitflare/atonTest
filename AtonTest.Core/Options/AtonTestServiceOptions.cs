@@ -2,5 +2,7 @@ namespace AtonTest.Core.Options;
 
 public class AtonTestServiceOptions
 {
-    public string? JwtKey { get; set; }
+    public string? AccessJwtKey { get; set; }
+    public string? RefreshJwtKey { get; set; }
+    
 }

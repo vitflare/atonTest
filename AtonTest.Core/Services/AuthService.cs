@@ -5,17 +5,17 @@ namespace AtonTest.Core;
 
 public class AuthService : IAuthService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly IReadonlyUserRepository _readonlyUserRepository;
 
-    public AuthService(IUserRepository userRepository)
+    public AuthService(IReadonlyUserRepository readonlyUserRepository)
     {
-        _userRepository = userRepository;
+        _readonlyUserRepository = readonlyUserRepository;
     }
     
     public async Task<bool> ValidateUser(LoginDto dto)
     {
-        var user = await _userRepository.GetUser(dto.Login, dto.Password);
-        if (user == null || user.RevokedOn != null)
+        var user = await _readonlyUserRepository.GetUser(dto.Login, dto.Password);
+        if (user is null || user.RevokedOn is not null)
         {
             throw new ArgumentException("User not found");
         }

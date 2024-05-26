@@ -1,5 +1,4 @@
 using AtonTest.Core.DTOs;
-using AtonTest.Core.Models;
 
 namespace AtonTest.Core.Interfaces;
 

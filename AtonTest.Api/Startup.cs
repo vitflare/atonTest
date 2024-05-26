@@ -1,11 +1,10 @@
-using System.Reflection;
 using System.Text;
-using AtonTest.Core.Options;
+using AtonTest.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using pomotracker.Api;
-using pomotracker.Core.Options;
 
 namespace AtonTest;
 
@@ -23,6 +22,7 @@ public class Startup
         services.AddControllers();
         services.AddServices();
         services.AddRepositories();
+        services.AddScoped<JwtMiddleware>();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
@@ -58,7 +58,17 @@ public class Startup
         });
         
         services.AddCors();
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(ConfigureOptions);
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(ConfigureOptionsAccess)
+            .AddJwtBearer("Refresh", ConfigureOptionsRefresh);
+        
+        services.AddAuthorization(options =>
+        { 
+            options.AddPolicy("Refresh", new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes("Refresh")
+                .Build());
+        });
         services.AddOptions(_configuration);
     }
     
@@ -75,6 +85,7 @@ public class Startup
         
         app.UseHttpsRedirection();
 
+        app.UseMiddleware<JwtMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
         
@@ -84,7 +95,7 @@ public class Startup
         });
     }
     
-    void ConfigureOptions(JwtBearerOptions jwtBearerOptions)
+    void ConfigureOptionsAccess(JwtBearerOptions jwtBearerOptions)
     {
         jwtBearerOptions.RequireHttpsMetadata = false;
         jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters()
@@ -98,7 +109,28 @@ public class Startup
                 TokenValidationParameters parameters) => new List<SecurityKey>()
             {
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_configuration["AtonTestServiceOptions:JwtKey"]!))
+                    Encoding.UTF8.GetBytes(_configuration["AtonTestServiceOptions:AccessJwtKey"]!))
+            },
+            ValidateIssuerSigningKey = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    }
+    
+    void ConfigureOptionsRefresh(JwtBearerOptions jwtBearerOptions)
+    {
+        jwtBearerOptions.RequireHttpsMetadata = false;
+        jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "AtonTestAuthService",
+            ValidateAudience = true,
+            ValidAudience = "AtonTestAuthService",
+            ValidateLifetime = true,
+            IssuerSigningKeyResolver = (string token, SecurityToken securityToken, string kid,
+                TokenValidationParameters parameters) => new List<SecurityKey>()
+            {
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_configuration["AtonTestServiceOptions:RefreshJwtKey"]!))
             },
             ValidateIssuerSigningKey = true,
             ClockSkew = TimeSpan.Zero

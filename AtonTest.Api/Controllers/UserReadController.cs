@@ -1,11 +1,6 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using AtonTest.Core.Interfaces;
-using AtonTest.Core.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace AtonTest.Controllers;
 
@@ -13,13 +8,11 @@ namespace AtonTest.Controllers;
 [Route("[controller]")]
 public class UserReadController : ControllerBase
 {
-    private readonly TokenValidationParameters _validationParameters;
-    private readonly IUserRepository _userRepository;
+    private readonly IReadonlyUserRepository _readonlyUserRepository;
     
-    public UserReadController(IOptionsSnapshot<AtonTestServiceOptions> optionsSnapshot, IUserRepository userRepository)
+    public UserReadController(IReadonlyUserRepository readonlyUserRepository)
     {
-        _userRepository = userRepository;
-        _validationParameters = optionsSnapshot.GetTokenValidationParameters();
+        _readonlyUserRepository = readonlyUserRepository;
     }
     
     [HttpGet]
@@ -27,7 +20,7 @@ public class UserReadController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetOnlineUser()
     {
-        var users = await _userRepository.GetOnlineUsers();
+        var users = await _readonlyUserRepository.GetOnlineUsers();
         var sortedUsers = users.OrderBy(u => u.CreatedOn);
         return Ok(sortedUsers);
     }
@@ -37,7 +30,7 @@ public class UserReadController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUserByLogin(string login)
     {
-        var user = await _userRepository.GetUserByLogin(login);
+        var user = await _readonlyUserRepository.GetUserByLogin(login);
         if (user == null)
         {
             return BadRequest("User not found");
@@ -57,18 +50,20 @@ public class UserReadController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetUsersByLoginAndPassword(string login, string password)
     {
-        var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        var claims = new JwtSecurityTokenHandler().ValidateToken(token, _validationParameters, out _).Claims;
-        var loginClaim = claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+        var loginClaim = HttpContext.Items["UserLogin"].ToString();
         if (!loginClaim.Equals(login))
         {
             return Unauthorized("You don't have permission to get information about this user");
         }
 
-        var user = await _userRepository.GetUser(login, password);
+        var user = await _readonlyUserRepository.GetUserByLogin(login);
         if (user == null)
         {
             return BadRequest("User not found");
+        }
+        if (user.Password != password)
+        {
+            return BadRequest("Invalid password");
         }
         if (user.RevokedOn != null)
         {
@@ -86,7 +81,7 @@ public class UserReadController : ControllerBase
         {
             return BadRequest("Invalid age");
         }
-        var users = await _userRepository.GetUsersOlderThan(age);
+        var users = await _readonlyUserRepository.GetUsersOlderThan(age);
         return Ok(users);
     }
 }
