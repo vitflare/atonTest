@@ -6,7 +6,6 @@ namespace AtonTest.Core.Interfaces;
 public interface IUserRepository
 {
     Task CreateUser(CreateUserDto dto);
-    Task<bool> CheckLogin(string login);
     Task UpdateUser(User user);
     Task<int> SoftDeleteUserAsync(DeleteUserDto dto);
     Task<int> HardDeleteUserAsync(DeleteUserDto dto);

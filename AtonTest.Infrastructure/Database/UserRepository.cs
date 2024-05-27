@@ -19,25 +19,6 @@ public class UserRepository : IUserRepository
         _connectionString = $"host={databaseOptions.Host};port={databaseOptions.Port}" +
                             $";database={databaseOptions.Database};username={databaseOptions.Username};" +
                             $"password={databaseOptions.Password}";
-        SqlMapper.SetTypeMap(
-            typeof(User),
-            new CustomPropertyTypeMap(
-                typeof(User),
-                (type, columnName) =>
-                {
-                    PropertyInfo? property = type.GetProperties().FirstOrDefault(prop =>
-                    {
-                        if (prop.Name.ToLower() == "admin")
-                        {
-                            return prop.Name.ToLower() == columnName.Replace("is_", "");
-                        }
-                        return prop.Name.ToLower() == columnName.Replace("_", "");
-                    });
-
-                    return property;
-                }
-            )
-        );
     }
 
     public async Task CreateUser(CreateUserDto dto)
@@ -46,8 +27,10 @@ public class UserRepository : IUserRepository
         await connection.OpenAsync();
 
         await using var command = new NpgsqlCommand(
-            "INSERT INTO users (guid, login, password, name, gender, birthday, is_admin, created_on, created_by, modified_on, modified_by) " +
-            "values (gen_random_uuid(), @login, @password, @name, @gender, @birthday, @is_admin, @created_on, @created_by, @modified_on, @modified_by) ");
+            """
+            INSERT INTO users (guid, login, password, name, gender, birthday, is_admin, created_on, created_by, modified_on, modified_by) 
+            values (gen_random_uuid(), @login, @password, @name, @gender, @birthday, @is_admin, @created_on, @created_by, @modified_on, @modified_by)
+            """);
 
         var queryParameters = new
         {
@@ -65,22 +48,6 @@ public class UserRepository : IUserRepository
         
         await connection.QueryFirstOrDefaultAsync(command.CommandText, queryParameters);
     }
-    
-    public async Task<bool> CheckLogin(string login)
-    {
-        await using var connection = new NpgsqlConnection(_connectionString);
-        await connection.OpenAsync();
-        
-        await using var command = new NpgsqlCommand("SELECT (login) FROM users WHERE login = @login", connection);
-        
-        var queryParameters = new
-        {
-            login = login
-        };
-        
-        var result = await connection.QueryFirstOrDefaultAsync<string>(command.CommandText, queryParameters);
-        return result == null;
-    }
 
     public async Task UpdateUser(User user)
     {
@@ -88,9 +55,11 @@ public class UserRepository : IUserRepository
         await connection.OpenAsync();
 
         await using var command = new NpgsqlCommand(
-            "UPDATE users SET login = @login, password = @password, name = @name, gender = @gender, " +
-            "birthday = @birthday, modified_on = @modified_on, modified_by = @modified_by " +
-            "WHERE guid = @guid");
+            """
+            UPDATE users SET login = @login, password = @password, name = @name, gender = @gender, 
+            birthday = @birthday, modified_on = @modified_on, modified_by = @modified_by 
+            WHERE guid = @guid
+            """);
 
         var queryParameters = new
         {
@@ -113,8 +82,10 @@ public class UserRepository : IUserRepository
         await connection.OpenAsync();
         
         await using var command = new NpgsqlCommand(
-            "UPDATE users SET revoked_on = @revoked_on, revoked_by = @revoked_by " +
-            "WHERE login = @login AND password = @password", 
+            """
+            UPDATE users SET revoked_on = @revoked_on, revoked_by = @revoked_by 
+            WHERE login = @login AND password = @password
+            """, 
             connection);
 
         var queryParameters = new

@@ -18,25 +18,6 @@ public class ReadonlyUserRepository : IReadonlyUserRepository
         _connectionString = $"host={databaseOptions.Host};port={databaseOptions.Port}" +
                             $";database={databaseOptions.Database};username={databaseOptions.Username};" +
                             $"password={databaseOptions.Password}";
-        SqlMapper.SetTypeMap(
-            typeof(User),
-            new CustomPropertyTypeMap(
-                typeof(User),
-                (type, columnName) =>
-                {
-                    PropertyInfo? property = type.GetProperties().FirstOrDefault(prop =>
-                    {
-                        if (prop.Name.ToLower() == "admin")
-                        {
-                            return prop.Name.ToLower() == columnName.Replace("is_", "");
-                        }
-                        return prop.Name.ToLower() == columnName.Replace("_", "");
-                    });
-
-                    return property;
-                }
-            )
-        );
     }
     
     public async Task<User?> GetUser(string login, string password)
@@ -86,13 +67,14 @@ public class ReadonlyUserRepository : IReadonlyUserRepository
 
     public async Task<IEnumerable<User>> GetUsersOlderThan(int age)
     {
+        var dt = DateTime.Now.AddYears(-age);
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync();
         
-        await using var command = new NpgsqlCommand($"SELECT * FROM users WHERE AGE(birthday) > @interval", connection);
+        await using var command = new NpgsqlCommand($"SELECT * FROM users WHERE birthday <= @date", connection);
         var queryParameters = new
         {
-            interval = TimeSpan.FromDays(age * 365.25)
+            date = dt
         };
         var users = await connection.QueryAsync<User>(command.CommandText, queryParameters);
         return users;

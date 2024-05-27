@@ -67,17 +67,16 @@ public class UsersController : ControllerBase
             ModifiedBy = login
         };
 
-        int count;
         try
         {
-            count = await _userManagementService.UpdateUserInfo(dto);
+            await _userManagementService.UpdateUserInfo(dto);
         }
         catch (ArgumentException e)
         {
             return BadRequest(e.Message);
         }
 
-        return count == 0?  Ok("No changes were made") : Ok("User info updated successfully!");
+        return Ok();
     }
 
     [HttpPatch]

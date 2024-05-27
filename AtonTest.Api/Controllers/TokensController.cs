@@ -64,8 +64,8 @@ public class TokensController : Controller
             new Claim(ClaimTypes.Name, request.Login),
             new Claim(ClaimTypes.Role, isAdmin ? "Admin" : "User")
         };
-        var accessToken = CreateToken(10, claims, _optionsSnapshot.Value.AccessJwtKey!);
-        var refreshToken = CreateToken(15, claims, _optionsSnapshot.Value.RefreshJwtKey!);
+        var accessToken = CreateToken(30, claims, _optionsSnapshot.Value.AccessJwtKey!);
+        var refreshToken = CreateToken(45, claims, _optionsSnapshot.Value.RefreshJwtKey!);
 
         return Json(new
         {
@@ -85,7 +85,7 @@ public class TokensController : Controller
 
         return Json(new
         {
-            accessToken = CreateToken(10, claims, _optionsSnapshot.Value.AccessJwtKey!),
+            accessToken = CreateToken(30, claims, _optionsSnapshot.Value.AccessJwtKey!),
             refreshToken = token
         });
     }

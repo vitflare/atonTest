@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AtonTest.Core.DTOs;
 using AtonTest.Core.Interfaces;
 
@@ -17,15 +18,16 @@ public class UserManagementService : IUserManagementService
     
     public async Task CreateUser(CreateUserDto dto)
     {
-        if (! await _userRepository.CheckLogin(dto.Login))
+        dto.Validate();
+        var user = await _readonlyUserRepository.GetUserByLogin(dto.Login);
+        if (user is not null)
         {
             throw new ArgumentException("Login already exists");
         }
-        dto.Validate();
         await _userRepository.CreateUser(dto);
     }
 
-    public async Task<int> UpdateUserInfo(UpdateUserInfoDto dto)
+    public async Task UpdateUserInfo(UpdateUserInfoDto dto)
     {
         dto.Validate();
         var user = await _readonlyUserRepository.GetUserByLogin(dto.Login);
@@ -35,25 +37,16 @@ public class UserManagementService : IUserManagementService
         {
             throw new ArgumentException("User is revoked");
         }
-
-        var changedFields = 0;
-        changedFields += dto.Birthday != null && dto.Birthday != user.Birthday ? 1 : 0;
+        
         user.Birthday = dto.Birthday ?? user.Birthday;
-        changedFields += dto.Name != null && dto.Name != user.Name ? 1 : 0;
         user.Name = dto.Name ?? user.Name;
-        changedFields += dto.Gender != null && dto.Gender != user.Gender ? 1 : 0;
         user.Gender = dto.Gender ?? user.Gender;
-        if (changedFields == 0)
-        {
-            return changedFields;
-        }
         user.ModifiedBy = dto.ModifiedBy;
         user.ModifiedOn = DateTime.Now;
         
         await _userRepository.UpdateUser(user);
-        return changedFields;
     }
-
+    
     public async Task UpdateUserPassword(UpdateUserPasswordDto dto)
     {
         dto.Validate();
@@ -85,7 +78,8 @@ public class UserManagementService : IUserManagementService
         {
             throw new ArgumentException("User is revoked");
         }
-        if (! await _userRepository.CheckLogin(dto.NewLogin))
+        var userWithNewLogin = await _readonlyUserRepository.GetUserByLogin(dto.NewLogin);
+        if (userWithNewLogin is not null)
         {
             throw new ArgumentException("Login already exists");
         }

@@ -1,5 +1,8 @@
+using System.Reflection;
 using System.Text;
+using AtonTest.Core.Models;
 using AtonTest.Middlewares;
+using Dapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -28,9 +31,9 @@ public class Startup
         {
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n 
-                      Enter 'Bearer' [space] and then your token in the text input below.
-                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+                Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n" + 
+                      "Enter 'Bearer' [space] and then your token in the text input below." +
+                      "\r\n\r\nExample: 'Bearer 12345abcdef'",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.ApiKey,
@@ -70,6 +73,25 @@ public class Startup
                 .Build());
         });
         services.AddOptions(_configuration);
+        SqlMapper.SetTypeMap(
+            typeof(User),
+            new CustomPropertyTypeMap(
+                typeof(User),
+                (type, columnName) =>
+                {
+                    PropertyInfo? property = type.GetProperties().FirstOrDefault(prop =>
+                    {
+                        if (prop.Name.ToLower() == "admin")
+                        {
+                            return prop.Name.ToLower() == columnName.Replace("is_", "");
+                        }
+                        return prop.Name.ToLower() == columnName.Replace("_", "");
+                    });
+        
+                    return property;
+                }
+            )
+        );
     }
     
     public void Configure(IHostEnvironment environment, IApplicationBuilder app)
