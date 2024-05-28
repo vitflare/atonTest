@@ -9,11 +9,17 @@ services:
       POSTGRES_DB: aton-service
       POSTGRES_USER: aton-service
       POSTGRES_PASSWORD: aton-service
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
       
   goose:
     image: ghcr.io/kukymbr/goose-docker:latest
     depends_on:
-      - aton-db
+      aton-db:
+        condition: service_healthy
     volumes:
       - ./migrations:/migrations
     environment:
